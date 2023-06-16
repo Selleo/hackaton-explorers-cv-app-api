@@ -78,8 +78,10 @@ export class AppController {
   }
 
   @Get()
-  candidates() {
-    return this.candidateReporsitory.find();
+  candidates(@Body() criteria?: Candidate) {
+    if (!criteria) return this.candidateReporsitory.find();
+
+    console.log(criteria);
   }
 
   @Post("upload")
@@ -87,7 +89,9 @@ export class AppController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.extractTextfrompdf(file.buffer);
 
-    return this.promptGpt(text);
+    const gpttext = await this.promptGpt(text);
+
+    return this.candidateReporsitory.create(gpttext as Candidate).save();
   }
 
   async promptGpt(text: string) {
