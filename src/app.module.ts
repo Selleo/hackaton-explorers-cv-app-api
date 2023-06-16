@@ -10,8 +10,8 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    DatabaseModule,
-    TypeOrmModule.forFeature([Candidate]),
+    // DatabaseModule,
+    // TypeOrmModule.forFeature([Candidate]),
   ],
   controllers: [AppController],
   providers: [
