@@ -78,7 +78,11 @@ export class AppController {
   }
 
   @Get()
-  candidates(@Body() criteria?: Candidate) {
+  candidates(@Body() criteria: Candidate) {
+    if (!Object.keys(criteria).length) return this.candidateReporsitory.find();
+
+    console.log(criteria);
+
     return this.candidateReporsitory.find();
   }
 
@@ -98,7 +102,7 @@ export class AppController {
       messages: [
         {
           role: "user",
-          content: `extract data from the cv text enclosed in <review> tag to JSON object with keys 'englishLevel' (string), 'cityOfLiving' (string), 'age' (number), 'studies' (array of strings), 'githubProfile' (string), 'skills' (array of strings), 'personalWebsite' (string). When null Don't add // comments.
+          content: `extract data from the cv text enclosed in <review> tag to JSON object with keys 'name' (string) 'englishLevel' (string), 'cityOfLiving' (string), 'age' (number), 'studies' (array of strings), 'githubProfile' (string), 'skills' (array of strings), 'personalWebsite' (string). When null Don't add // comments.
           <review>${text}</review>`,
         },
       ],
@@ -128,5 +132,32 @@ export class AppController {
       console.error("Error parsing PDF:", error);
       throw error;
     }
+  }
+
+  @Post("rank")
+  async rankCandidates(@Body() criteria: Partial<Candidate>) {
+    const candidates = await this.candidateReporsitory.find();
+
+    const prompt = `assign rank from 0 to 10 to the objects in array enclosed in <candidates> tag based on how close they match object enclosed in <criteria> tag. Do not return code. <candidates>${candidates}</candidates> <criteria>${criteria}</criteria>. RETURN JSON`;
+
+    const chatCompletion = await this.openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    });
+
+    const response = chatCompletion?.data.choices[0].message?.content;
+
+    console.log(response);
+
+    const data = JSON.parse(response || "{}") as {
+      candidates: [{ id: number; rank: number }];
+    };
+
+    return data;
   }
 }

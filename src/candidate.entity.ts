@@ -6,6 +6,9 @@ export class Candidate extends BaseEntity {
   id: number;
 
   @Column({ nullable: true })
+  name: string;
+
+  @Column({ nullable: true })
   cityOfLiving: string;
 
   @Column({ nullable: true })
