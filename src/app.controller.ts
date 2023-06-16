@@ -16,7 +16,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Candidate } from "@app/candidate.entity";
 import { Repository } from "typeorm";
 import { Configuration, OpenAIApi } from "openai";
-import { getDocument } from "pdfjs-dist";
+import { PDFExtract } from "pdf.js-extract";
 
 const dupa = `{
   "englishLevel": "Advanced, C1",
@@ -86,12 +86,7 @@ export class AppController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.extractTextfrompdf(file.buffer);
 
-    const cvDatagpt = await this.promptGpt(text);
-
-    if (!cvDatagpt) return { error: "co poszlo nie tak" };
-    const candidateData = JSON.parse(cvDatagpt) as Candidate;
-
-    return await this.candidateReporsitory.create(candidateData).save();
+    return this.promptGpt("test");
   }
 
   async promptGpt(text: string) {
@@ -113,19 +108,9 @@ export class AppController {
 
   async extractTextfrompdf(buffer: Buffer) {
     try {
-      const loadingTask = getDocument(new Uint8Array(buffer));
-      const pdf = await loadingTask.promise;
-      const numPages = pdf.numPages;
-      let text = "";
+      const pdfExtract = new PDFExtract();
 
-      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-        const page = await pdf.getPage(pageNum);
-        const content = await page.getTextContent();
-        const pageText = content.items.map((item: any) => item.str).join(" ");
-        text += pageText + "\n";
-      }
-
-      return text;
+      return pdfExtract.extractBuffer(buffer);
     } catch (error) {
       console.error("Error parsing PDF:", error);
       throw error;

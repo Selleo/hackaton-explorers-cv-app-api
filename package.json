@@ -32,7 +32,7 @@
     "class-validator": "^0.14.0",
     "express": "^4.18.1",
     "openai": "^3.3.0",
-    "pdfjs-dist": "^3.7.107",
+    "pdf.js-extract": "^0.2.1",
     "pg": "^8.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
