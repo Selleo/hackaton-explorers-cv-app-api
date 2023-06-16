@@ -79,9 +79,7 @@ export class AppController {
 
   @Get()
   candidates(@Body() criteria?: Candidate) {
-    if (!criteria) return this.candidateReporsitory.find();
-
-    console.log(criteria);
+    return this.candidateReporsitory.find();
   }
 
   @Post("upload")
