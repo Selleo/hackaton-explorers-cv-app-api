@@ -11,8 +11,8 @@ export class Candidate extends BaseEntity {
   @Column()
   age: string;
 
-  @Column()
-  studies: string;
+  @Column("text", { array: true, nullable: true })
+  studies: string[];
 
   @Column()
   englishLevel: string;
@@ -20,8 +20,8 @@ export class Candidate extends BaseEntity {
   @Column()
   githubProfile: string;
 
-  @Column()
-  skills: string;
+  @Column("text", { array: true, nullable: true })
+  skills: string[];
 
   @Column()
   personalWebsite: string;

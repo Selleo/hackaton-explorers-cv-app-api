@@ -34,6 +34,8 @@ export class AppController {
     const text = this.extractTextfrompdf(file.buffer);
 
     const cvData = this.promptGpt(text);
+
+    return `uploaded file ${file.filename}`;
   }
 
   promptGpt(text: string) {
