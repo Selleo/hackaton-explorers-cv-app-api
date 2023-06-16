@@ -1,17 +1,17 @@
-import { AppController } from '@app/app.controller';
-import { AppService } from '@app/app.service';
-import { DatabaseModule } from '@app/database/database.module';
-import { Todo } from '@app/todo.entity';
-import { Module, ValidationPipe } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { APP_PIPE } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from "@app/app.controller";
+import { AppService } from "@app/app.service";
+import { Candidate } from "@app/candidate.entity";
+import { DatabaseModule } from "@app/database/database.module";
+import { Module, ValidationPipe } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { APP_PIPE } from "@nestjs/core";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     DatabaseModule,
-    TypeOrmModule.forFeature([Todo]),
+    TypeOrmModule.forFeature([Candidate]),
   ],
   controllers: [AppController],
   providers: [

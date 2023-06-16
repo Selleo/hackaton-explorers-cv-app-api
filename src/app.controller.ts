@@ -1,4 +1,3 @@
-import { Todo } from '@app/todo.entity';
 import {
   Body,
   Controller,
@@ -9,42 +8,41 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 
-import { AppService } from './app.service';
+import { AppService } from "./app.service";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Candidate } from "@app/candidate.entity";
+import { Repository } from "typeorm";
 
-@Controller()
+@Controller("candidates")
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    @InjectRepository(Candidate)
+    private readonly candidateReporsitory: Repository<Candidate>
+  ) {}
 
   @Get()
-  todos() {
-    return Todo.find();
+  candidates() {
+    return this.candidateReporsitory.find();
   }
 
-  @Post()
-  createTodo(@Body() body: { content: string; isCompleted?: boolean }) {
-    console.log(body);
-    return Todo.create({ content: body.content }).save();
-  }
-
-  @Patch(':todoId')
-  async updateTodo(
-    @Param('todoId', ParseIntPipe) todoId: number,
-    @Body() body: { content?: string; isCompleted?: boolean },
-  ) {
-    const todo = await Todo.findOneOrFail({ where: { id: todoId } });
-    todo.content = body.content || todo.content;
-    todo.isCompleted = body.isCompleted || todo.isCompleted;
-    return todo.save();
-  }
-
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @Post("upload")
+  @UseInterceptors(FileInterceptor("file"))
   uploadFile(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
-    const { filename, size, mimetype, originalname } = file;
-    return { filename, size, mimetype, originalname };
+    const text = this.extractTextfrompdf(file.buffer);
+
+    const cvData = this.promptGpt(text);
+  }
+
+  promptGpt(text: string) {
+    // todo
+  }
+
+  extractTextfrompdf(buffer: Buffer): string {
+    // todo
+
+    return "";
   }
 }
