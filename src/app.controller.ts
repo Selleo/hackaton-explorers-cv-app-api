@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -86,7 +87,7 @@ export class AppController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.extractTextfrompdf(file.buffer);
 
-    return this.promptGpt("test");
+    return this.promptGpt(text);
   }
 
   async promptGpt(text: string) {
@@ -101,16 +102,26 @@ export class AppController {
       ],
     });
 
-    console.log(chatCompletion);
+    if (!chatCompletion?.data.choices[0].message?.content)
+      throw new BadRequestException("coś się stało");
 
-    return chatCompletion?.data.choices[0].message?.content;
+    return JSON.parse(chatCompletion?.data.choices[0].message?.content);
   }
 
   async extractTextfrompdf(buffer: Buffer) {
     try {
       const pdfExtract = new PDFExtract();
 
-      return pdfExtract.extractBuffer(buffer);
+      const data = await pdfExtract.extractBuffer(buffer);
+
+      let text = "";
+
+      for (const page of data.pages) {
+        const pageText = page.content.map((item) => item.str).join(" ");
+
+        text += pageText + "\n";
+      }
+      return text;
     } catch (error) {
       console.error("Error parsing PDF:", error);
       throw error;
