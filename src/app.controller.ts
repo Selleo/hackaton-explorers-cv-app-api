@@ -26,7 +26,7 @@ export class AppController {
   constructor() {
     // private readonly candidateReporsitory: Repository<Candidate> // @InjectRepository(Candidate)
     this.configuration = new Configuration({
-      apiKey: "apikey",
+      apiKey: process.env.OPENAI_KEY || "",
     });
     this.openai = new OpenAIApi(this.configuration);
   }
@@ -41,9 +41,7 @@ export class AppController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.extractTextfrompdf(file.buffer);
 
-    const cvData = await this.promptGpt(text);
-
-    return cvData;
+    return this.promptGpt(text);
   }
 
   async promptGpt(text: string) {
