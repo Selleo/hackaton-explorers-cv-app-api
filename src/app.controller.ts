@@ -89,7 +89,9 @@ export class AppController {
     const cvDatagpt = await this.promptGpt(text);
 
     if (!cvDatagpt) return { error: "co poszlo nie tak" };
-    return JSON.parse(cvDatagpt);
+    const candidateData = JSON.parse(cvDatagpt) as Candidate;
+
+    return await this.candidateReporsitory.create(candidateData).save();
   }
 
   async promptGpt(text: string) {
