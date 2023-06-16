@@ -16,15 +16,60 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Candidate } from "@app/candidate.entity";
 import { Repository } from "typeorm";
 import { Configuration, OpenAIApi } from "openai";
-import * as pdfjsLib from "pdfjs-dist";
+import { getDocument } from "pdfjs-dist";
+
+const dupa = `{
+  "englishLevel": "Advanced, C1",
+  "cityOfLiving": "Poland",
+  "age": null,
+  "studies": [
+  "Bachelor of Engineering in Computer Science",
+  "Specialization: Software Engineering",
+  "June 2019 - Present",
+  "Enchanted Meadows High School",
+  "Specialty: Computer Technician, IT",
+  "2016 - 2019 — 3 years"
+  ],
+  "githubProfile": "https://github.com/TheMultii",
+  "skills": [
+  "C# (.NET)",
+  "ASP.NET",
+  "Entity Framework Core",
+  "Python",
+  "React",
+  "Angular",
+  "Vue.js",
+  "HTML",
+  "CSS/SCSS",
+  "JavaScript",
+  "TypeScript",
+  "PHP",
+  "Laravel",
+  "React Native (Expo, Bare)",
+  "C++",
+  "Ruby",
+  "Ruby on Rails",
+  "Flutter",
+  "Dart",
+  "Java",
+  "MySQL",
+  "SQLite",
+  "MS SQL",
+  "MongoDB",
+  "GIT"
+  ],
+  "personalWebsite": null
+  }`;
 
 @Controller("candidates")
 export class AppController {
   private configuration: Configuration;
   private openai: OpenAIApi;
 
-  constructor() {
-    // private readonly candidateReporsitory: Repository<Candidate> // @InjectRepository(Candidate)
+  constructor(
+    @InjectRepository(Candidate)
+    private readonly candidateReporsitory: Repository<Candidate>
+  ) {
     this.configuration = new Configuration({
       apiKey: process.env.OPENAI_KEY || "",
     });
@@ -33,7 +78,7 @@ export class AppController {
 
   @Get()
   candidates() {
-    // return this.candidateReporsitory.find();
+    return this.candidateReporsitory.find();
   }
 
   @Post("upload")
@@ -41,7 +86,10 @@ export class AppController {
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const text = await this.extractTextfrompdf(file.buffer);
 
-    return this.promptGpt(text);
+    const cvDatagpt = await this.promptGpt(text);
+
+    if (!cvDatagpt) return { error: "co poszlo nie tak" };
+    return JSON.parse(cvDatagpt);
   }
 
   async promptGpt(text: string) {
@@ -56,12 +104,14 @@ export class AppController {
       ],
     });
 
+    console.log(chatCompletion);
+
     return chatCompletion?.data.choices[0].message?.content;
   }
 
   async extractTextfrompdf(buffer: Buffer) {
     try {
-      const loadingTask = pdfjsLib.getDocument(new Uint8Array(buffer));
+      const loadingTask = getDocument(new Uint8Array(buffer));
       const pdf = await loadingTask.promise;
       const numPages = pdf.numPages;
       let text = "";

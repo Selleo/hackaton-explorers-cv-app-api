@@ -37,3 +37,5 @@ lerna-debug.log*
 /.env
 /.env.*
 !.env.example
+
+.nestjs_repl_history
