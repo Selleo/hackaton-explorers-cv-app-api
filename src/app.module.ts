@@ -1,5 +1,5 @@
 import { AppController } from "@app/app.controller";
-import { AppService } from "@app/app.service";
+import { CandidateService } from "@app/app.service";
 import { Candidate } from "@app/candidate.entity";
 import { DatabaseModule } from "@app/database/database.module";
 import { Module, ValidationPipe } from "@nestjs/common";
@@ -15,7 +15,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
   ],
   controllers: [AppController],
   providers: [
-    AppService,
+    CandidateService,
     {
       provide: APP_PIPE,
       useValue: new ValidationPipe({ transform: true }),

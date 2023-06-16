@@ -5,24 +5,24 @@ export class Candidate extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true })
   cityOfLiving: string;
 
-  @Column()
+  @Column({ nullable: true })
   age: string;
 
   @Column("text", { array: true, nullable: true })
   studies: string[];
 
-  @Column()
+  @Column({ nullable: true })
   englishLevel: string;
 
-  @Column()
+  @Column({ nullable: true })
   githubProfile: string;
 
   @Column("text", { array: true, nullable: true })
   skills: string[];
 
-  @Column()
+  @Column({ nullable: true })
   personalWebsite: string;
 }

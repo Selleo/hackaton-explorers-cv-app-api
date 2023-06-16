@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 
-import { AppService } from "./app.service";
+import { CandidateService } from "./app.service";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Candidate } from "@app/candidate.entity";
 import { Repository } from "typeorm";
